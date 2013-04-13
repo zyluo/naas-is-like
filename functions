@@ -1,0 +1,47 @@
+function get_tenant_uuid() {
+    local var=$(keystone tenant-list | grep "\s$1\s" | awk '{ print $2 }')
+    if [ -z $var ]
+    then
+        local ten_id=$(keystone tenant-create --name $1 | \
+                       grep "\sid\s" | awk '{ print $4 }')
+        local usr_id=$(keystone user-create --name $1 --pass $1 \
+                       --tenant-id $ten_id | \
+                       grep "\sid\s" | awk '{ print $4 }')
+        echo $ten_id
+    else
+        echo $var
+    fi
+}
+
+function get_network_uuid() {
+    #echo $(quantum net-show $1 | grep "\sid\s" | awk '{ print $4 }')
+    echo $(quantum net-list | grep "\s$1\s" | awk '{print $2}')
+}
+
+function create_network() {
+    local var=$(get_network_uuid $2)
+    if [ -z $var ]
+    then
+        echo $(quantum net-create --tenant_id $1 $2 | grep "\sid\s" | \
+               awk '{ print $4 }')
+    else
+        echo $var
+    fi
+}
+
+function get_subnet_uuid() {
+    echo $(quantum subnet-list | grep "\s$1\s" | awk '{print $2}')
+}
+
+function create_subnet() {
+    local var=$(get_subnet_uuid $3)
+    if [ -z $var ]
+    then
+        echo $(quantum subnet-create --tenant_id $1 --ip_version 4 \
+               --gateway $4 --name $3 $2 $5 | grep "\sid\s" | \
+               awk '{ print $4 }')
+    else
+        echo $var
+    fi
+}
+
