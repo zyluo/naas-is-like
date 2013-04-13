@@ -1,4 +1,4 @@
-quantum-naas-requirements
-=========================
+naas-is-like
+============
 
-Quantum integration tests based on NaaS requirements
+OpenStack virtual network service integration tests based on NaaS requirements
