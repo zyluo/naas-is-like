@@ -13,8 +13,12 @@ function get_tenant_uuid() {
     fi
 }
 
+function get_external_network_uuid() {
+    echo $(quantum net-list -- --router:external=True | \
+           grep "\s$1\s" | awk '{print $2}')
+}
+
 function get_network_uuid() {
-    #echo $(quantum net-show $1 | grep "\sid\s" | awk '{ print $4 }')
     echo $(quantum net-list | grep "\s$1\s" | awk '{print $2}')
 }
 
@@ -42,6 +46,130 @@ function create_subnet() {
                awk '{ print $4 }')
     else
         echo $var
+    fi
+}
+
+function get_router_uuid() {
+    echo $(quantum router-list | grep "\s$1\s" | awk '{print $2}')
+}
+
+function create_router() {
+    local var=$(get_router_uuid $1)
+    if [ -z $var ]
+    then
+        quantum router-create $ROUTER_NAME
+    fi
+}
+
+function router_has_subnet() {
+    if [ -z $(quantum router-port-list $1 | grep "\"$2\"" | awk '{print $2}') ]
+    then
+        echo false
+    else
+        echo true
+    fi
+}
+
+function add_router_subnet_interface() {
+    if ! $(router_has_subnet $1 $2)
+    then
+        quantum router-interface-add $1 $2
+    fi
+}
+
+function router_has_gateway() {
+    if [ -z $(quantum router-show $1 | grep "\"$2\"" | awk '{print $2}') ]
+    then
+        echo false
+    else
+        echo true
+    fi
+}
+
+function set_router_gateway() {
+    if ! $(router_has_gateway $1 $2)
+    then
+        quantum router-gateway-set $1 $2
+    fi
+}
+
+function get_port_uuid() {
+    echo $(quantum port-list | grep "\s$1\s" | awk '{print $2}')
+}
+
+function create_port() {
+    local var=$(get_port_uuid $3)
+    if [ -z $var ]
+    then
+        echo $(quantum port-create --name $3 \
+               --fixed-ip subnet_id=$2,ip_address=$4 $1 \
+               | grep "\sid\s" | awk '{print $4}')
+    else
+        echo $var
+    fi
+}
+
+function get_image_uuid() {
+    local var=$(glance image-list | grep "\s$1\s" | awk '{ print $2 }')
+    echo $var
+}
+
+function create_image() {
+    local imagepath=~/quantal-server-cloudimg-amd64-disk1.img
+    local var=$(get_image_uuid $1)
+    if [ -z $var ] && [ -r $imagepath ]
+    then
+        var=$(glance image-create --name $1 --is-public True \
+              --disk-format qcow2 --container-format ovf --file $imagepath | \
+              grep "\sid\s" | awk '{ print $4 }')
+    fi
+    echo $var
+}
+
+function get_keypair_name() {
+    local keypath=~/.ssh/id_rsa.pub
+    local var=$(nova keypair-list | grep "\s$1\s" | awk '{ print $2 }')
+    if [ -z $var ] && [ -r $keypath ]
+    then
+        nova keypair-add --pub-key $keypath $1
+        var=$(nova keypair-list | grep "\s$1\s" | awk '{ print $2 }')
+    fi
+    echo $var
+}
+
+function add_default_sg_rules() {
+    local var=$(nova secgroup-list-rules default | \
+                grep -E "$1.+$2.+$3.+$4" | awk '{ print $2 }')
+    if [ -z $var ]
+    then
+        nova secgroup-add-rule default $1 $2 $3 $4
+    fi
+}
+
+function get_instance_uuid() {
+    local var=$(nova list | grep "\s$1\s" | awk '{ print $2 }')
+    echo $var
+}
+
+function boot_instance() {
+    local var=$(get_instance_uuid $2)
+    if [ -z $var ]
+    then
+        nova boot --image $3 --flavor $4 --nic port-id=$1 --key-name $5 \
+        --poll $2
+    fi
+}
+
+function get_public_ip_on_port() {
+    # TODO(zyluo): Optimize to "quantum floatingip-list -- --port_id=ZZZ"
+    echo $(quantum floatingip-list | grep "\s$1\s" | awk '{ print $6 }')
+}
+
+function associate_public_ip_on_port() {
+    local var=$(get_public_ip_on_port $1)
+    if [ -z $var ]
+    then
+        quantum floatingip-create --port_id $1 $2
     fi
 }
 
