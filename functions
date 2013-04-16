@@ -160,6 +160,15 @@ function boot_instance() {
     fi
 }
 
+function boot_instance_dhcp() {
+    local var=$(get_instance_uuid $2)
+    if [ -z $var ]
+    then
+        nova boot --image $3 --flavor $4 --nic net-id=$1 --key-name $5 \
+        --poll $2
+    fi
+}
+
 function get_public_ip_on_port() {
     # TODO(zyluo): Optimize to "quantum floatingip-list -- --port_id=ZZZ"
     echo $(quantum floatingip-list | grep "\s$1\s" | awk '{ print $6 }')
