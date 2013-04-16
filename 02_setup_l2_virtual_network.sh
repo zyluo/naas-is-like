@@ -1,12 +1,6 @@
 source globals
 source functions
 
-# Create networks Network1 and Network2
-# Network1 will have Subnet1 with VM1_1 and VM1_2
-# Network2 will have Subnet2 with VM2_1
-# Verify connectivity from VM1_1 to VM1_2
-# Verify isolation from VM1_1 to VM2_1
-
 # Set tenant to Tenant1
 OS_TENANT_NAME=$TEN_1_NAME
 OS_USERNAME=$TEN_1_NAME
@@ -71,20 +65,38 @@ PORT_NAME=port_$VM_NAME
 PORT_UUID=$(create_port $NET_NAME $SUB_UUID $PORT_NAME $VM_ADDR)
 boot_instance $PORT_UUID $VM_NAME $IMAGE_UUID $FLAVOR_TYPE $KEYPAIR_NAME
 
-# Change env to Network2 / Subnet2
-NET_NAME=$NET_2_NAME
+# Change env to Network1 / Subnet2
+NET_NAME=$NET_1_NAME
 SUB_NAME=$SUB_2_NAME
 SUB_UUID=$(get_subnet_uuid $SUB_NAME)
 
-# Connect Subnet1 to the external network
-ROUTER_NAME=$ROUTER_2_NAME
+# Connect Subnet2 to the external network
+ROUTER_NAME=$ROUTER_1_NAME
 create_router $ROUTER_NAME
 add_router_subnet_interface $ROUTER_NAME $SUB_UUID
 set_router_gateway $ROUTER_NAME $EXT_NET_UUID
 
 # Create vm2-3
-VM_ADDR=1.2.2.30
+VM_ADDR=1.1.2.30
 VM_NAME=vm2_3
+PORT_NAME=port_$VM_NAME
+PORT_UUID=$(create_port $NET_NAME $SUB_UUID $PORT_NAME $VM_ADDR)
+boot_instance $PORT_UUID $VM_NAME $IMAGE_UUID $FLAVOR_TYPE $KEYPAIR_NAME
+
+# Change env to Network2 / Subnet3
+NET_NAME=$NET_2_NAME
+SUB_NAME=$SUB_3_NAME
+SUB_UUID=$(get_subnet_uuid $SUB_NAME)
+
+# Connect Subnet3 to the external network
+ROUTER_NAME=$ROUTER_2_NAME
+create_router $ROUTER_NAME
+add_router_subnet_interface $ROUTER_NAME $SUB_UUID
+set_router_gateway $ROUTER_NAME $EXT_NET_UUID
+
+# Create vm3-4
+VM_ADDR=1.2.3.40
+VM_NAME=vm3_4
 PORT_NAME=port_$VM_NAME
 PORT_UUID=$(create_port $NET_NAME $SUB_UUID $PORT_NAME $VM_ADDR)
 boot_instance $PORT_UUID $VM_NAME $IMAGE_UUID $FLAVOR_TYPE $KEYPAIR_NAME

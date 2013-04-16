@@ -14,22 +14,57 @@ FLAVOR_TYPE=m1.tiny
 
 EXT_NET_NAME=public
 
+# == Network Topology ==
+#
+# Tenant1
+# |
+# +-> Network1
+# |   |
+# |   +-> Subnet1
+# |   |   |
+# |   |   +-> VM1-1 (IP Statically allocated)
+# |   |   |
+# |   |   +-> VM1-2 (IP Statically allocated)
+# |   |
+# |   +-> Subnet2
+# |       |
+# |       +-> VM2-3 (IP Statically allocated)
+# |
+# +-> Network2
+#     |
+#     +-> Subnet3
+#         |
+#         +-> VM3-4 (IP Statically allocated)
+#
+# Tenant2
+# |
+# +-> Network3
+#     |
+#     +-> Subnet4 (Overlaping CIDR with Subnet1)
+#         |
+#         +-> VM4-5 (IP Dynamically allocated)
+
 TEN_1_NAME=tenant1
 
 NET_1_NAME=network1
 ROUTER_1_NAME=router1
+
 SUB_1_NAME=subnet1
 SUB_1_PREFIX=1.1.1.
 
+SUB_2_NAME=subnet2
+SUB_2_PREFIX=1.1.2.
+
 NET_2_NAME=network2
 ROUTER_2_NAME=router2
-SUB_2_NAME=subnet2
-SUB_2_PREFIX=1.2.2.
+
+SUB_3_NAME=subnet3
+SUB_3_PREFIX=1.2.3.
 
 TEN_2_NAME=tenant2
 
 NET_3_NAME=network3
-SUB_3_NAME=subnet3
-SUB_3_PREFIX=2.3.3.
+ROUTER_3_NAME=router3
+
 SUB_4_NAME=subnet4
 SUB_4_PREFIX=2.3.4.
