@@ -82,6 +82,7 @@ VM_NAME=vm2_3
 PORT_NAME=port_$VM_NAME
 PORT_UUID=$(create_port $NET_NAME $SUB_UUID $PORT_NAME $VM_ADDR)
 boot_instance $PORT_UUID $VM_NAME $IMAGE_UUID $FLAVOR_TYPE $KEYPAIR_NAME
+associate_public_ip_on_port $PORT_UUID $EXT_NET_UUID
 
 # Change env to Network2 / Subnet3
 NET_NAME=$NET_2_NAME
