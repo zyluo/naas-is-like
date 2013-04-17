@@ -1,0 +1,37 @@
+MY_PASSWORD=abracadabra
+DATABASE_PASSWORD=$MY_PASSWORD
+RABBIT_PASSWORD=$MY_PASSWORD
+SERVICE_TOKEN=$MY_PASSWORD
+SERVICE_PASSWORD=$MY_PASSWORD
+ADMIN_PASSWORD=$MY_PASSWORD
+
+disable_service n-net
+enable_service q-svc
+enable_service q-agt
+enable_service q-dhcp
+enable_service q-l3
+enable_service q-meta
+enable_service quantum
+enable_service tempest
+
+RECLONE=yes
+#SCREEN_LOGDIR=$DEST/logs/screen
+
+# Edit below settings if you are behind a proxy
+#http_proxy=myproxy.com:80
+#https_proxy=myproxy.com:443
+#no_proxy=myproxy.com,*.myproxy.com,10.0.0.0/8,192.168.0.0/16,127.0.0.0/8,localhost
+#GIT_PROXY_COMMAND=~/my_script
+
+SERVICE_HOST=localhost
+MYSQL_HOST=$SERVICE_HOST
+RABBIT_HOST=$SERVICE_HOST
+Q_HOST=$SERVICE_HOST
+Q_META_DATA_IP=$SERVICE_HOST
+Q_ALLOW_OVERLAPPING_IP=True
+
+Q_ROUTER_NAME=default_router
+ENABLE_TENANT_VLANS=True
+TENANT_VLAN_RANGE=1000:1999
+PHYSICAL_NETWORK=default
+OVS_PHYSICAL_BRIDGE=br-eth1
