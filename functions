@@ -73,12 +73,15 @@ function create_role() {
 }
 
 # $1 - tenant name
+# $2 - user name
+# $3 - user password
+# $4 - role name
 # returns - tenant uuid
 function init_tenant() {
     local ten_name=$1; shift
-    local usr_name=$ten_name
-    local usr_pass=$ten_name
-    local rol_name=$ten_name
+    local usr_name=$1; shift
+    local usr_pass=$1; shift
+    local rol_name=$1; shift
     local ten_uuid=$(create_tenant $ten_name)
     local usr_uuid=$(create_user $ten_name $usr_name $usr_pass)
     if [ -z $(keystone user-role-list --tenant-id $ten_uuid \

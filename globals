@@ -14,6 +14,8 @@ FLAVOR_TYPE=m1.tiny
 
 EXT_NET_NAME=public
 
+DEFAULT_ROLE_NAME=_member_
+
 # == Network Topology ==
 #
 # Tenant1
@@ -45,6 +47,7 @@ EXT_NET_NAME=public
 #         +-> VM4-5 (IP Dynamically allocated)
 
 TEN_1_NAME=tenant1
+TEN_1_ROLE_NAME=$DEFAULT_ROLE_NAME
 
 NET_1_NAME=network1
 ROUTER_1_NAME=router1
@@ -62,6 +65,7 @@ SUB_3_NAME=subnet3
 SUB_3_PREFIX=1.2.3.
 
 TEN_2_NAME=tenant2
+TEN_2_ROLE_NAME=$DEFAULT_ROLE_NAME
 
 NET_3_NAME=network3
 ROUTER_3_NAME=router3
