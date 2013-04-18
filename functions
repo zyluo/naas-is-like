@@ -59,7 +59,7 @@ function create_user() {
     echo $usr_uuid
 }
 
-# $1 - rol name
+# $1 - role name
 # returns - role uuid
 function create_role() {
     local rol_name=$1; shift
