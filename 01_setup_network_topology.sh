@@ -12,7 +12,7 @@ fi
 
 # Get Tenant1 uuid
 TENANT_NAME=$TEN_1_NAME
-TENANT_UUID=$(get_tenant_uuid $TENANT_NAME)
+TENANT_UUID=$(init_tenant $TENANT_NAME)
 
 # Create Network1
 NET_NAME=$NET_1_NAME
@@ -45,7 +45,7 @@ SUB_UUID=$(create_subnet $TENANT_UUID $NET_UUID $SUB_NAME \
 
 # Get Tenant2 uuid
 TENANT_NAME=$TEN_2_NAME
-TENANT_UUID=$(get_tenant_uuid $TENANT_NAME)
+TENANT_UUID=$(init_tenant $TENANT_NAME)
 
 # Create Network3
 NET_NAME=$NET_3_NAME

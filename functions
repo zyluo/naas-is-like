@@ -1,16 +1,92 @@
+# $1 - tenant name
+# returns - tenant uuid
 function get_tenant_uuid() {
-    local var=$(keystone tenant-list | grep "\s$1\s" | awk '{ print $2 }')
-    if [ -z $var ]
+    local ten_name=$1; shift
+    echo $(keystone tenant-list | \
+           grep "\s$ten_name\s" | awk '{ print $2 }')
+}
+
+# $1 - tenant name
+# $2 - user name
+# returns - user uuid
+function get_user_uuid() {
+    local ten_name=$1; shift
+    local usr_name=$1; shift
+    local ten_uuid=$(get_tenant_uuid $ten_name)
+    echo $(keystone user-list --tenant-id $ten_uuid | \
+           grep "\s$usr_name\s" | awk '{ print $2 }')
+}
+
+# $1 - role name
+# returns - role uuid
+function get_role_uuid() {
+    local rol_name=$1; shift
+    echo $(keystone role-list | \
+           grep "\s$rol_name\s" | awk '{ print $2 }')
+}
+
+# $1 - tenant name
+# returns - tenant uuid
+function create_tenant() {
+    local ten_name=$1; shift
+    local ten_uuid=$(get_tenant_uuid $ten_name)
+    if [ -z $ten_uuid ]
     then
-        local ten_id=$(keystone tenant-create --name $1 | \
-                       grep "\sid\s" | awk '{ print $4 }')
-        local usr_id=$(keystone user-create --name $1 --pass $1 \
-                       --tenant-id $ten_id | \
-                       grep "\sid\s" | awk '{ print $4 }')
-        echo $ten_id
-    else
-        echo $var
+        ten_uuid=$(keystone tenant-create --name $ten_name | \
+                   grep "\sid\s" | awk '{ print $4 }')
     fi
+    echo $ten_uuid
+}
+
+# $1 - tenant name
+# $2 - user name
+# returns - user uuid
+function create_user() {
+    local ten_name=$1; shift
+    local usr_name=$1; shift
+    local usr_uuid=$(get_user_uuid $ten_name $usr_name)
+    if [ -z $usr_uuid ]
+    then
+        local ten_uuid=$(get_tenant_uuid $ten_name)
+        local usr_pass=$usr_name
+        usr_uuid=$(keystone user-create --name $usr_name --pass $usr_pass \
+                                        --tenant-id $ten_uuid | \
+                   grep "\sid\s" | awk '{ print $4 }')
+    fi
+    echo $usr_uuid
+}
+
+# $1 - rol name
+# returns - role uuid
+function create_role() {
+    local rol_name=$1; shift
+    local rol_uuid=$(get_role_uuid $rol_name)
+    if [ -z $rol_uuid ]
+    then
+        rol_uuid=$(keystone role-create --name $rol_name | \
+                   grep "\sid\s" | awk '{ print $4 }')
+    fi
+    echo $rol_uuid
+}
+
+# $1 - tenant name
+# returns - tenant uuid
+function init_tenant() {
+    local ten_name=$1; shift
+    local usr_name=$ten_name
+    local rol_name=$ten_name
+    local ten_uuid=$(create_tenant $ten_name)
+    local usr_uuid=$(create_user $ten_name $usr_name)
+    if [ -z $(keystone user-role-list --tenant-id $ten_uuid \
+                                      --user-id $usr_uuid | \
+              grep "\s$rol_name\s" | awk '{ print $2 }') ]
+    then
+        local rol_uuid=$(create_role $rol_name)
+        keystone user-role-add --user-id $usr_uuid \
+                               --role-id $rol_uuid \
+                               --tenant_id $ten_uuid
+    fi
+    echo $ten_uuid
 }
 
 function get_external_network_uuid() {
