@@ -40,18 +40,21 @@ function create_tenant() {
 
 # $1 - tenant name
 # $2 - user name
+# $3 - user password
 # returns - user uuid
 function create_user() {
     local ten_name=$1; shift
     local usr_name=$1; shift
+    local usr_pass=$1; shift
     local usr_uuid=$(get_user_uuid $ten_name $usr_name)
     if [ -z $usr_uuid ]
     then
         local ten_uuid=$(get_tenant_uuid $ten_name)
-        local usr_pass=$usr_name
         usr_uuid=$(keystone user-create --name $usr_name --pass $usr_pass \
                                         --tenant-id $ten_uuid | \
                    grep "\sid\s" | awk '{ print $4 }')
+    else
+        keystone user-password-update --pass $usr_pass $usr_uuid
     fi
     echo $usr_uuid
 }
@@ -74,9 +77,10 @@ function create_role() {
 function init_tenant() {
     local ten_name=$1; shift
     local usr_name=$ten_name
+    local usr_pass=$ten_name
     local rol_name=$ten_name
     local ten_uuid=$(create_tenant $ten_name)
-    local usr_uuid=$(create_user $ten_name $usr_name)
+    local usr_uuid=$(create_user $ten_name $usr_name $usr_pass)
     if [ -z $(keystone user-role-list --tenant-id $ten_uuid \
                                       --user-id $usr_uuid | \
               grep "\s$rol_name\s" | awk '{ print $2 }') ]
