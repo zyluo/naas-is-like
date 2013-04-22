@@ -17,15 +17,13 @@ VM2_3_PVTIP="$SUB_2_PREFIX"30
 VM3_4_PVTIP="$SUB_3_PREFIX"40
 
 echo "Checking connectivity and isolation from "$VM1_1_PVTIP
-
-ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM1_2_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM2_3_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM3_4_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM1_1_PUBIP" 'arp'
+ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM1_2_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM2_3_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM1_1_PUBIP" 'ping '"$VM3_4_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM1_1_PUBIP" 'arp'; echo
 
 echo "Checking connectivity and isolation from "$VM2_3_PVTIP
-
-ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM1_1_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM1_2_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM3_4_PVTIP"' -c 5'
-ssh -t ubuntu@"$VM2_3_PUBIP" 'arp'
+ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM1_1_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM1_2_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM2_3_PUBIP" 'ping '"$VM3_4_PVTIP"' -c 3'; echo
+ssh -t ubuntu@"$VM2_3_PUBIP" 'arp'; echo
